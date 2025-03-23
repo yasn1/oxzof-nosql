@@ -1,170 +1,168 @@
-
 # NoSQL Database with SQLite (Custom Implementation)
 
-Bu proje, SQLite kullanarak basit bir **NoSQL tarzı veritabanı** sunar. MongoDB'ye benzer şekilde, veriler JSON formatında saklanır ve her veri benzersiz bir `_id` ile kaydedilir. Bu veritabanı, `insertOne`, `find`, `findOne`, `createCollection` gibi MongoDB tarzı temel işlevleri destekler.
+This project provides a simple **NoSQL-style database** using SQLite. Similar to MongoDB, data is stored in JSON format, and each entry is assigned a unique `_id`. The database supports fundamental MongoDB-like operations such as `insertOne`, `find`, `findOne`, and `createCollection`.
 
-## İçindekiler
+## Table of Contents
 
-- [Kurulum](#kurulum)
-- [Kullanım](#kullanım)
-  - [Veritabanı Bağlantısı](#veritabanı-bağlantısı)
-  - [Koleksiyon (Collection) Oluşturma](#koleksiyon-collection-olusturma)
-  - [Veri Ekleme (insertOne)](#veri-ekleme-insertone)
-  - [Veri Arama (find ve findOne)](#veri-arama-find-ve-findone)
-  - [Veritabanını Kapatma (close)](#veritabani-kapatma-close)
-- [API Fonksiyonları](#api-fonksiyonları)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Database Connection](#database-connection)
+  - [Creating a Collection](#creating-a-collection)
+  - [Inserting Data (insertOne)](#inserting-data-insertone)
+  - [Querying Data (find and findOne)](#querying-data-find-and-findone)
+  - [Closing the Database (close)](#closing-the-database-close)
+- [API Functions](#api-functions)
   - [createCollection](#createcollection)
   - [insertOne](#insertone)
   - [find](#find)
   - [findOne](#findone)
   - [close](#close)
-- [Test](#test)
+- [Testing](#testing)
 
-## Kurulum
+## Installation
 
-1. **Node.js'i Yükleyin**  
-   Bu projeyi çalıştırmak için bilgisayarınızda [Node.js](https://nodejs.org/) yüklü olmalıdır. Node.js'i indirin ve kurun.
+1. **Install Node.js**  
+   Ensure you have [Node.js](https://nodejs.org/) installed on your system.
 
-2. **Gerekli Paketleri Yükleyin**  
-   Projenin kök dizininde terminal açarak aşağıdaki komutu çalıştırın:
+2. **Install Dependencies**  
+   Run the following command in your project's root directory:
    ```bash
    npm install
    ```
+   This will install all required dependencies, including SQLite3 and UUID.
 
-   Bu, gerekli tüm bağımlılıkları (SQLite3 ve UUID) yükleyecektir.
+## Usage
 
-## Kullanım
+### Database Connection
 
-### Veritabanı Bağlantısı
-
-Veritabanına bağlantı kurmak için aşağıdaki kodu kullanabilirsiniz:
+To establish a connection to the database:
 
 ```javascript
 const NoSQLDB = require("oxzof-nosql");
 const db = new NoSQLDB();
 ```
 
-Veritabanı başarıyla bağlanacak ve `"Database connected."` mesajını terminalde göreceksiniz.
+Once connected, you will see the message: `Database connected.`
 
-### Koleksiyon (Collection) Oluşturma
+### Creating a Collection
 
-Yeni bir koleksiyon oluşturmak için:
+To create a new collection:
 
 ```javascript
 await db.createCollection("users");
 ```
 
-Eğer koleksiyon zaten varsa, tekrar oluşturulmaz.
+If the collection already exists, it will not be recreated.
 
-### Veri Ekleme (insertOne)
+### Inserting Data (insertOne)
 
-Yeni bir veri eklemek için `insertOne` fonksiyonunu kullanabilirsiniz:
+To insert a new document:
 
 ```javascript
-await db.insertOne("users", { name: "Ali", age: 25, gender: "M" });
+await db.insertOne("users", { name: "John", age: 25, gender: "M" });
 ```
 
-Bu işlem veriye benzersiz bir `_id` ekler ve veriyi koleksiyona kaydeder.
+This operation automatically assigns a unique `_id` and stores the data in the collection.
 
-### Veri Arama (find ve findOne)
+### Querying Data (find and findOne)
 
-- **Tüm verileri çekmek için:**
+- **Retrieve all documents:**
 
 ```javascript
 const users = await db.find("users");
-console.log(users); // Tüm kullanıcıları listele
+console.log(users); // Lists all users
 ```
 
-- **Belirli bir veriyi aramak için:**
+- **Find a specific document:**
 
 ```javascript
-const user = await db.findOne("users", { name: "Ali" });
-console.log(user); // 'Ali' adındaki kullanıcıyı getir
+const user = await db.findOne("users", { name: "John" });
+console.log(user); // Returns the first matching document
 ```
 
-`find` fonksiyonu tüm verileri dönerken, `findOne` sadece ilk eşleşen veriyi döner.
+`find` returns an array of all matching documents, while `findOne` returns only the first match.
 
-### Veritabanını Kapatma (close)
+### Closing the Database (close)
 
-Veritabanını kapatmak için:
+To close the database connection:
 
 ```javascript
 db.close();
 ```
 
-Bu fonksiyon veritabanı bağlantısını kapatır ve uygulamayı sonlandırır.
+This function terminates the database connection and stops the application.
 
-## API Fonksiyonları
+## API Functions
 
 ### `createCollection(name)`
-Yeni bir koleksiyon oluşturur.
+Creates a new collection.
 
-- **Parametreler:**
-  - `name` (String): Oluşturulacak koleksiyon adı.
+- **Parameters:**
+  - `name` (String): The name of the collection.
 
-- **Örnek:**
+- **Example:**
   ```javascript
   await db.createCollection("users");
   ```
 
 ### `insertOne(collection, data)`
-Veri eklerken benzersiz bir `_id` oluşturur ve JSON verisini ekler.
+Inserts a document with a unique `_id` and stores it in JSON format.
 
-- **Parametreler:**
-  - `collection` (String): Veri eklenecek koleksiyon adı.
-  - `data` (Object): Eklenecek JSON verisi.
+- **Parameters:**
+  - `collection` (String): The collection name.
+  - `data` (Object): The document to be inserted.
 
-- **Örnek:**
+- **Example:**
   ```javascript
-  await db.insertOne("users", { name: "Ali", age: 25, gender: "M" });
+  await db.insertOne("users", { name: "John", age: 25, gender: "M" });
   ```
 
-- **Dönen Değer:**
-  `{ _id, ...data }` : Ekleme işlemi sonrası yeni veriyi döner.
+- **Return Value:**
+  `{ _id, ...data }`: Returns the inserted document.
 
 ### `find(collection, filter)`
-Bir koleksiyondaki tüm verileri arar. `filter` parametresi ile filtreleme yapılabilir.
+Finds all documents in a collection. Filtering is optional.
 
-- **Parametreler:**
-  - `collection` (String): Veri aranacak koleksiyon adı.
-  - `filter` (Object): Arama kriteri.
+- **Parameters:**
+  - `collection` (String): The collection name.
+  - `filter` (Object): The search criteria.
 
-- **Örnek:**
+- **Example:**
   ```javascript
-  const users = await db.find("users", { name: "Ali" });
-  console.log(users); // Ali'yi bulur
+  const users = await db.find("users", { name: "John" });
+  console.log(users);
   ```
 
-- **Dönen Değer:**
-  `Array`: Filtrelenen verilerin listesi.
+- **Return Value:**
+  `Array`: Returns an array of matching documents.
 
 ### `findOne(collection, filter)`
-Bir koleksiyondaki ilk veriyi arar.
+Finds the first document that matches the filter criteria.
 
-- **Parametreler:**
-  - `collection` (String): Veri aranacak koleksiyon adı.
-  - `filter` (Object): Arama kriteri.
+- **Parameters:**
+  - `collection` (String): The collection name.
+  - `filter` (Object): The search criteria.
 
-- **Örnek:**
+- **Example:**
   ```javascript
-  const user = await db.findOne("users", { name: "Ali" });
-  console.log(user); // Ali'yi bulur
+  const user = await db.findOne("users", { name: "John" });
+  console.log(user);
   ```
 
-- **Dönen Değer:**
-  `Object`: İlk eşleşen veriyi döner.
+- **Return Value:**
+  `Object`: Returns the first matching document.
 
 ### `close()`
-Veritabanı bağlantısını kapatır ve uygulamayı sonlandırır.
+Closes the database connection.
 
-- **Örnek:**
+- **Example:**
   ```javascript
   db.close();
   ```
 
-## Test
+## Testing
 
-Aşağıda, projeyi test etmek için örnek bir `index.js` dosyası verilmiştir:
+Below is a sample `index.js` file to test the project:
 
 ```javascript
 const NoSQLDB = require("oxzof-nosql");
@@ -173,13 +171,13 @@ const db = new NoSQLDB();
 async function main() {
     console.log(await db.createCollection("users"));
 
-    // Veriyi eklerken benzersiz _id'ler oluşturulacak
-    console.log(await db.insertOne("users", { name: "Ali", age: 25, gender: "M" }));
-    console.log(await db.insertOne("users", { name: "Veli", age: 30, gender: "M" }));
-    console.log(await db.insertOne("users", { name: "Ayşe", age: 22, gender: "F" }));
+    // Each inserted document will have a unique _id
+    console.log(await db.insertOne("users", { name: "John", age: 25, gender: "M" }));
+    console.log(await db.insertOne("users", { name: "Mike", age: 30, gender: "M" }));
+    console.log(await db.insertOne("users", { name: "Anna", age: 22, gender: "F" }));
 
-    console.log("📜 Tüm kullanıcılar:", await db.find("users"));
-    console.log("🔍 Ali'yi bul:", await db.findOne("users", { name: "Ali" }));
+    console.log("All users:", await db.find("users"));
+    console.log("Find John:", await db.findOne("users", { name: "John" }));
 
     db.close();
 }
@@ -189,5 +187,6 @@ main();
 
 ---
 
-### **Proje Hakkında**
-Bu proje, SQLite tabanlı bir NoSQL veritabanı mimarisi sunar. MongoDB gibi NoSQL veritabanlarının esnekliğini arayanlar için ideal bir çözümdür. Veritabanına eklenen her veri benzersiz bir `_id` ile ilişkilendirilir ve JSON formatında saklanır.
+### **About the Project**
+This project provides a NoSQL-style database architecture on top of SQLite. It is ideal for those who need the flexibility of NoSQL databases like MongoDB while leveraging the simplicity of a file-based SQLite storage system. Each inserted document is assigned a unique `_id` and is stored in JSON format.
+
