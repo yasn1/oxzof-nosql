@@ -40,7 +40,7 @@ Bu proje, SQLite kullanarak basit bir **NoSQL tarzı veritabanı** sunar. MongoD
 Veritabanına bağlantı kurmak için aşağıdaki kodu kullanabilirsiniz:
 
 ```javascript
-const NoSQLDB = require("./database");
+const NoSQLDB = require("oxzof-nosql");
 const db = new NoSQLDB();
 ```
 
@@ -167,7 +167,7 @@ Veritabanı bağlantısını kapatır ve uygulamayı sonlandırır.
 Aşağıda, projeyi test etmek için örnek bir `index.js` dosyası verilmiştir:
 
 ```javascript
-const NoSQLDB = require("./database");
+const NoSQLDB = require("oxzof-nosql");
 const db = new NoSQLDB();
 
 async function main() {
