@@ -1,192 +1,168 @@
-# NoSQL Database with SQLite (Custom Implementation)
 
-This project provides a simple **NoSQL-style database** using SQLite. Similar to MongoDB, data is stored in JSON format, and each entry is assigned a unique `_id`. The database supports fundamental MongoDB-like operations such as `insertOne`, `find`, `findOne`, and `createCollection`.
+# oxzof-nosql
 
-## Table of Contents
+`oxzof-nosql` is a lightweight, SQLite-based NoSQL-like database implementation for Node.js. This package provides a set of functions for simulating NoSQL database operations (insert, update, find, delete) using SQLite under the hood.
 
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Database Connection](#database-connection)
-  - [Creating a Collection](#creating-a-collection)
-  - [Inserting Data (insertOne)](#inserting-data-insertone)
-  - [Querying Data (find and findOne)](#querying-data-find-and-findone)
-  - [Closing the Database (close)](#closing-the-database-close)
-- [API Functions](#api-functions)
-  - [createCollection](#createcollection)
-  - [insertOne](#insertone)
-  - [find](#find)
-  - [findOne](#findone)
-  - [close](#close)
-- [Testing](#testing)
+This package is designed to mimic the structure of a NoSQL database, with automatic unique ID generation, collection handling, and simple API for basic operations like inserting and querying documents. It's perfect for projects where you need a simple and lightweight database without the need for an external NoSQL service.
+
+## Features
+
+- **Insert one or many documents** with automatic unique `_id`.
+- **Update one or many documents** with filter-based conditions.
+- **Find documents** based on filters or query all documents.
+- **Delete one or many documents**.
+- **Drop a collection (table)**.
+- **Automatic creation of collections** if they don't already exist.
+- **SQLite-based** lightweight solution for local storage.
 
 ## Installation
 
-1. **Install Node.js**  
-   Ensure you have [Node.js](https://nodejs.org/) installed on your system.
+You can install `oxzof-nosql` from npm:
 
-2. **Install Dependencies**  
-   Run the following command in your project's root directory:
-   ```bash
-   npm install
-   ```
-   This will install all required dependencies, including SQLite3 and UUID.
+```bash
+npm install oxzof-nosql
+```
 
 ## Usage
 
-### Database Connection
+### Initialize `oxzof-nosql`
 
-To establish a connection to the database:
-
-```javascript
-const NoSQLDB = require("oxzof-nosql");
-const db = new NoSQLDB();
-```
-
-Once connected, you will see the message: `Database connected.`
-
-### Creating a Collection
-
-To create a new collection:
+To use the `oxzof-nosql` class, first import it and create an instance.
 
 ```javascript
-await db.createCollection("users");
+const NoSQLDB = require('oxzof-nosql');
+const db = new NoSQLDB('path/to/database.db'); // Provide the SQLite database file path
 ```
 
-If the collection already exists, it will not be recreated.
+### Create a Collection
 
-### Inserting Data (insertOne)
-
-To insert a new document:
+Create a collection (SQLite table) if it doesn't already exist.
 
 ```javascript
-await db.insertOne("users", { name: "John", age: 25, gender: "M" });
+db.createCollection('users')
+    .then(console.log)  // Output: Collection 'users' created.
+    .catch(console.error);
 ```
 
-This operation automatically assigns a unique `_id` and stores the data in the collection.
+### Insert One Document
 
-### Querying Data (find and findOne)
-
-- **Retrieve all documents:**
+Insert a single document into a collection. The document will automatically receive a unique `_id`.
 
 ```javascript
-const users = await db.find("users");
-console.log(users); // Lists all users
+const user = { name: 'Alice', age: 30, gender: 'F' };
+
+db.insertOne('users', user)
+    .then(data => console.log(data))  // Output: { _id: 'unique-id', name: 'Alice', age: 30, gender: 'F' }
+    .catch(err => console.error(err));
 ```
 
-- **Find a specific document:**
+### Insert Many Documents
+
+Insert multiple documents into a collection. Each document will automatically receive a unique `_id`.
 
 ```javascript
-const user = await db.findOne("users", { name: "John" });
-console.log(user); // Returns the first matching document
+const users = [
+    { name: 'Alice', age: 30, gender: 'F' },
+    { name: 'Bob', age: 35, gender: 'M' }
+];
+
+db.insertMany('users', users)
+    .then(data => console.log(data))  // Output: Array of inserted documents
+    .catch(err => console.error(err));
 ```
 
-`find` returns an array of all matching documents, while `findOne` returns only the first match.
+### Find Documents
 
-### Closing the Database (close)
+Find documents in a collection based on a filter. If no filter is provided, all documents will be returned.
 
-To close the database connection:
+```javascript
+db.find('users', { gender: 'F' })
+    .then(data => console.log(data))  // Output: Array of users with gender 'F'
+    .catch(err => console.error(err));
+```
+
+### Find One Document
+
+Find a single document based on a filter.
+
+```javascript
+db.findOne('users', { name: 'Alice' })
+    .then(data => console.log(data))  // Output: { _id: 'unique-id', name: 'Alice', age: 30, gender: 'F' }
+    .catch(err => console.error(err));
+```
+
+### Update One Document
+
+Update a single document. If the document is found, it will be updated with the new data.
+
+```javascript
+db.updateOne('users', { name: 'Alice' }, { age: 31 })
+    .then(data => console.log(data))  // Output: Updated user data
+    .catch(err => console.error(err));
+```
+
+### Update Many Documents
+
+Update multiple documents that match a filter. The method returns the number of successfully updated documents.
+
+```javascript
+db.updateMany('users', { gender: 'M' }, { age: 40 })
+    .then(result => console.log(result))  // Output: { success: 2 }
+    .catch(err => console.error(err));
+```
+
+### Delete One Document
+
+Delete a single document based on a filter.
+
+```javascript
+db.deleteOne('users', { name: 'Alice' })
+    .then(result => console.log(result))  // Output: Deleted document
+    .catch(err => console.error(err));
+```
+
+### Delete Many Documents
+
+Delete multiple documents based on a filter.
+
+```javascript
+db.deleteMany('users', { age: 30 })
+    .then(result => console.log(result))  // Output: Deleted documents
+    .catch(err => console.error(err));
+```
+
+### Drop Collection
+
+Drop a collection (delete the table) from the database.
+
+```javascript
+db.dropCollection('users')
+    .then(console.log)  // Output: Collection 'users' dropped.
+    .catch(console.error);
+```
+
+### Close the Database
+
+Close the database connection when you're done.
 
 ```javascript
 db.close();
 ```
 
-This function terminates the database connection and stops the application.
+## Methods Overview
 
-## API Functions
+- **`createCollection(name)`**: Creates a new collection (SQLite table) if it doesn't exist.
+- **`insertOne(collection, data)`**: Inserts one document into a collection with an automatically generated `_id`.
+- **`insertMany(collection, dataArray)`**: Inserts multiple documents into a collection, each with a unique `_id`.
+- **`find(collection, filter)`**: Finds documents in a collection based on the provided filter.
+- **`findOne(collection, filter)`**: Finds one document in a collection based on the provided filter.
+- **`updateOne(collection, filter, newData)`**: Updates one document in a collection.
+- **`updateMany(collection, filter, newData)`**: Updates multiple documents in a collection.
+- **`deleteOne(collection, filter)`**: Deletes one document from a collection.
+- **`deleteMany(collection, filter)`**: Deletes multiple documents from a collection.
+- **`dropCollection(name)`**: Drops (deletes) a collection.
+- **`close()`**: Closes the database connection.
 
-### `createCollection(name)`
-Creates a new collection.
+## License
 
-- **Parameters:**
-  - `name` (String): The name of the collection.
-
-- **Example:**
-  ```javascript
-  await db.createCollection("users");
-  ```
-
-### `insertOne(collection, data)`
-Inserts a document with a unique `_id` and stores it in JSON format.
-
-- **Parameters:**
-  - `collection` (String): The collection name.
-  - `data` (Object): The document to be inserted.
-
-- **Example:**
-  ```javascript
-  await db.insertOne("users", { name: "John", age: 25, gender: "M" });
-  ```
-
-- **Return Value:**
-  `{ _id, ...data }`: Returns the inserted document.
-
-### `find(collection, filter)`
-Finds all documents in a collection. Filtering is optional.
-
-- **Parameters:**
-  - `collection` (String): The collection name.
-  - `filter` (Object): The search criteria.
-
-- **Example:**
-  ```javascript
-  const users = await db.find("users", { name: "John" });
-  console.log(users);
-  ```
-
-- **Return Value:**
-  `Array`: Returns an array of matching documents.
-
-### `findOne(collection, filter)`
-Finds the first document that matches the filter criteria.
-
-- **Parameters:**
-  - `collection` (String): The collection name.
-  - `filter` (Object): The search criteria.
-
-- **Example:**
-  ```javascript
-  const user = await db.findOne("users", { name: "John" });
-  console.log(user);
-  ```
-
-- **Return Value:**
-  `Object`: Returns the first matching document.
-
-### `close()`
-Closes the database connection.
-
-- **Example:**
-  ```javascript
-  db.close();
-  ```
-
-## Testing
-
-Below is a sample `index.js` file to test the project:
-
-```javascript
-const NoSQLDB = require("oxzof-nosql");
-const db = new NoSQLDB();
-
-async function main() {
-    console.log(await db.createCollection("users"));
-
-    // Each inserted document will have a unique _id
-    console.log(await db.insertOne("users", { name: "John", age: 25, gender: "M" }));
-    console.log(await db.insertOne("users", { name: "Mike", age: 30, gender: "M" }));
-    console.log(await db.insertOne("users", { name: "Anna", age: 22, gender: "F" }));
-
-    console.log("All users:", await db.find("users"));
-    console.log("Find John:", await db.findOne("users", { name: "John" }));
-
-    db.close();
-}
-
-main();
-```
-
----
-
-### **About the Project**
-This project provides a NoSQL-style database architecture on top of SQLite. It is ideal for those who need the flexibility of NoSQL databases like MongoDB while leveraging the simplicity of a file-based SQLite storage system. Each inserted document is assigned a unique `_id` and is stored in JSON format.
-
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
