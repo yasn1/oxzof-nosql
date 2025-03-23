@@ -44,7 +44,7 @@ const NoSQLDB = require("oxzof-nosql");
 const db = new NoSQLDB();
 ```
 
-Veritabanı başarıyla bağlanacak ve `"✅ Database connected."` mesajını terminalde göreceksiniz.
+Veritabanı başarıyla bağlanacak ve `"Database connected."` mesajını terminalde göreceksiniz.
 
 ### Koleksiyon (Collection) Oluşturma
 
