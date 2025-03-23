@@ -1,6 +1,3 @@
-Tabii! Aşağıda, projeniz için detaylı bir README dosyası oluşturdum. Bu dosya, veritabanının nasıl kullanılacağını, kurulumunu ve fonksiyonlarını açık bir şekilde açıklıyor.
-
----
 
 # NoSQL Database with SQLite (Custom Implementation)
 
@@ -194,7 +191,3 @@ main();
 
 ### **Proje Hakkında**
 Bu proje, SQLite tabanlı bir NoSQL veritabanı mimarisi sunar. MongoDB gibi NoSQL veritabanlarının esnekliğini arayanlar için ideal bir çözümdür. Veritabanına eklenen her veri benzersiz bir `_id` ile ilişkilendirilir ve JSON formatında saklanır.
-
----
-
-Eğer başka bir sorunuz olursa, yardımcı olmaktan memnuniyet duyarım! 😊
